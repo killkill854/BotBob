@@ -14,5 +14,5 @@ public interface Strategy {
      * @param game  Различные игровые константы.
      * @param move  Результатом работы метода является изменение полей данного объекта.
      */
-    void move(Player me, World world, Game game, Move move);
+    void  move(Player me, World world, Game game, Move move);
 }

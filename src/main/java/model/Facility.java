@@ -86,4 +86,13 @@ public class Facility {
     public int getProductionProgress() {
         return productionProgress;
     }
+
+    public double getCenterX() {
+        return left + 32;
+    }
+
+    public double getCenterY() {
+        return top + 32;
+    }
+
 }

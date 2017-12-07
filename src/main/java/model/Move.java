@@ -348,4 +348,23 @@ public class Move {
     public void setVehicleId(long vehicleId) {
         this.vehicleId = vehicleId;
     }
+
+    public void set(Move move) {
+        this.action = move.action;
+        this.group = move.group;
+        this.left = move.left;
+        this.top = move.top;
+        this.right = move.right;
+        this.bottom = move.bottom;
+        this.x = move.x;
+        this.y = move.y;
+        this.angle = move.angle;
+        this.factor = move.factor;
+        this.maxSpeed = move.maxSpeed;
+        this.maxAngularSpeed = move.maxAngularSpeed;
+        this.vehicleType = move.vehicleType;
+        this.facilityId = move.facilityId;
+        this.vehicleId = move.vehicleId;
+    }
+
 }

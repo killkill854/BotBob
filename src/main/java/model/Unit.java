@@ -8,8 +8,8 @@ import static java.lang.StrictMath.hypot;
 @SuppressWarnings({"AbstractClassWithoutAbstractMethods", "WeakerAccess"})
 public abstract class Unit {
     private final long id;
-    private final double x;
-    private final double y;
+    private double x;
+    private double y;
 
     protected Unit(long id, double x, double y) {
         this.id = id;
@@ -31,11 +31,19 @@ public abstract class Unit {
         return x;
     }
 
+    public final void setX(double x) {
+        this.x = x;
+    }
+
     /**
      * @return Возвращает Y-координату центра объекта. Ось ординат направлена сверху вниз.
      */
     public final double getY() {
         return y;
+    }
+
+    public final void setY(double y) {
+        this.y = y;
     }
 
     /**

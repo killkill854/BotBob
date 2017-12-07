@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class Vehicle extends CircularUnit {
     private final long playerId;
-    private final int durability;
+    private int durability;
     private final int maxDurability;
     private final double maxSpeed;
     private final double visionRange;
@@ -21,11 +21,12 @@ public class Vehicle extends CircularUnit {
     private final int groundDefence;
     private final int aerialDefence;
     private final int attackCooldownTicks;
-    private final int remainingAttackCooldownTicks;
+    private int remainingAttackCooldownTicks;
     private final VehicleType type;
     private final boolean aerial;
-    private final boolean selected;
-    private final int[] groups;
+    private boolean selected;
+    private int[] groups;
+    private boolean yetUsed = false; // on this tick
 
     public Vehicle(
             long id, double x, double y, double radius, long playerId, int durability, int maxDurability,
@@ -84,6 +85,81 @@ public class Vehicle extends CircularUnit {
         this.groups = Arrays.copyOf(updateGroups, updateGroups.length);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vehicle vehicle = (Vehicle) o;
+
+        if (playerId != vehicle.playerId) return false;
+        if (durability != vehicle.durability) return false;
+        if (maxDurability != vehicle.maxDurability) return false;
+        if (Double.compare(vehicle.maxSpeed, maxSpeed) != 0) return false;
+        if (Double.compare(vehicle.visionRange, visionRange) != 0) return false;
+        if (Double.compare(vehicle.squaredVisionRange, squaredVisionRange) != 0) return false;
+        if (Double.compare(vehicle.groundAttackRange, groundAttackRange) != 0) return false;
+        if (Double.compare(vehicle.squaredGroundAttackRange, squaredGroundAttackRange) != 0) return false;
+        if (Double.compare(vehicle.aerialAttackRange, aerialAttackRange) != 0) return false;
+        if (Double.compare(vehicle.squaredAerialAttackRange, squaredAerialAttackRange) != 0) return false;
+        if (groundDamage != vehicle.groundDamage) return false;
+        if (aerialDamage != vehicle.aerialDamage) return false;
+        if (groundDefence != vehicle.groundDefence) return false;
+        if (aerialDefence != vehicle.aerialDefence) return false;
+        if (attackCooldownTicks != vehicle.attackCooldownTicks) return false;
+        if (remainingAttackCooldownTicks != vehicle.remainingAttackCooldownTicks) return false;
+        if (aerial != vehicle.aerial) return false;
+        if (selected != vehicle.selected) return false;
+        if (yetUsed != vehicle.yetUsed) return false;
+        if (type != vehicle.type) return false;
+        return Arrays.equals(groups, vehicle.groups);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (int) (playerId ^ (playerId >>> 32));
+        result = 31 * result + durability;
+        result = 31 * result + maxDurability;
+        temp = Double.doubleToLongBits(maxSpeed);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(visionRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(squaredVisionRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(groundAttackRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(squaredGroundAttackRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(aerialAttackRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(squaredAerialAttackRange);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + groundDamage;
+        result = 31 * result + aerialDamage;
+        result = 31 * result + groundDefence;
+        result = 31 * result + aerialDefence;
+        result = 31 * result + attackCooldownTicks;
+        result = 31 * result + remainingAttackCooldownTicks;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (aerial ? 1 : 0);
+        result = 31 * result + (selected ? 1 : 0);
+        result = 31 * result + Arrays.hashCode(groups);
+        result = 31 * result + (yetUsed ? 1 : 0);
+        return result;
+    }
+
+    public void update(VehicleUpdate vehicleUpdate) {
+        setX(vehicleUpdate.getX());
+        setY(vehicleUpdate.getY());
+        setDurability(vehicleUpdate.getDurability());
+        setRemainingAttackCooldownTicks(vehicleUpdate.getRemainingAttackCooldownTicks());
+        setSelected(vehicleUpdate.isSelected());
+        int[] updateGroups = vehicleUpdate.getGroups();
+        setGroups(Arrays.copyOf(updateGroups, updateGroups.length));
+    }
+
     /**
      * @return Возвращает идентификатор игрока, которому принадлежит техника.
      */
@@ -96,6 +172,10 @@ public class Vehicle extends CircularUnit {
      */
     public int getDurability() {
         return durability;
+    }
+
+    public void setDurability(int durability) {
+        this.durability = durability;
     }
 
     /**
@@ -205,6 +285,10 @@ public class Vehicle extends CircularUnit {
         return remainingAttackCooldownTicks;
     }
 
+    public void setRemainingAttackCooldownTicks(int remainingAttackCooldownTicks) {
+        this.remainingAttackCooldownTicks = remainingAttackCooldownTicks;
+    }
+
     /**
      * @return Возвращает тип техники.
      */
@@ -226,10 +310,27 @@ public class Vehicle extends CircularUnit {
         return selected;
     }
 
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     /**
      * @return Возвращает группы, в которые входит эта техника.
      */
     public int[] getGroups() {
         return Arrays.copyOf(groups, groups.length);
     }
+
+    public void setGroups(int[] groups) {
+        this.groups = groups;
+    }
+
+    public boolean isYetUsed() {
+        return yetUsed;
+    }
+
+    public void setYetUsed(boolean yetUsed) {
+        this.yetUsed = yetUsed;
+    }
+
 }

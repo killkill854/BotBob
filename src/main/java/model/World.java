@@ -1,6 +1,8 @@
 package model;
 
-import java.util.Arrays;
+import java.util.*;
+
+import static java.lang.StrictMath.hypot;
 
 /**
  * Этот класс описывает игровой мир. Содержит также описания всех игроков, игровых объектов (<<юнитов>>) и сооружений.
@@ -127,6 +129,20 @@ public class World {
      */
     public Facility[] getFacilities() {
         return Arrays.copyOf(facilities, facilities.length);
+    }
+
+    public List<Facility> getSortedFacilities(double x, double y) {
+        final List<Facility> facilities = new ArrayList<>();
+        Collections.addAll(facilities, this.facilities);
+        facilities.sort(new Comparator<Facility>() {
+            @Override
+            public int compare(Facility o1, Facility o2) {
+                return Double.compare(hypot(x - o1.getCenterX(), y - o1.getCenterY())
+                        , hypot(x - o2.getCenterX(), y - o2.getCenterY()));
+            }
+        });
+
+        return facilities;
     }
 
     /**
